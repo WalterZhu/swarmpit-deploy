@@ -8,6 +8,7 @@
 
 import * as core from '@actions/core'
 import * as main from '../src/main'
+import { get } from 'http'
 
 // Mock the action's main function
 const runMock = jest.spyOn(main, 'run')
@@ -22,7 +23,7 @@ let getInputMock: jest.SpyInstance
 let setFailedMock: jest.SpyInstance
 let setOutputMock: jest.SpyInstance
 
-describe('action', () => {
+describe('action test', () => {
   beforeEach(() => {
     jest.clearAllMocks()
 
@@ -33,4 +34,28 @@ describe('action', () => {
     setOutputMock = jest.spyOn(core, 'setOutput').mockImplementation()
   })
 
+  it('input swarmpit_uri must be uri string', async () => {
+    getInputMock.mockReturnValueOnce('swarmpit:8888')
+    await main.run()
+    expect(setFailedMock).toHaveBeenCalledWith(
+      'swarmpit_host is not a valid url'
+    )
+  })
+
+  it('input swarmpit_token must be string', async () => {
+    getInputMock.mockImplementation((name: string): string => {
+      switch (name) {
+        case 'swarmpit_uri':
+          return 'http://swarmpit.com:8888'
+        case 'swarmpit_token':
+          return '123456'
+        default:
+          return ''
+      }
+    })
+    await main.run()
+    expect(setFailedMock).toHaveBeenCalledWith(
+      'swarmpit_token is not a valid token'
+    )
+  })
 })

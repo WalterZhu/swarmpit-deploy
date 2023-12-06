@@ -9,7 +9,7 @@ branding:
 
 # Define your inputs here.
 inputs:
-  swarmpit_host:
+  swarmpit_uri:
     description: 'swarmpit的地址'
     required: true
     default: 'https://swarmpit.example.com'

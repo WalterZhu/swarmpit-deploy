@@ -1,5 +1,6 @@
 import * as core from '@actions/core'
 import axios from 'axios'
+import validator from 'validator'
 
 /**
  * The main function for the action.
@@ -8,58 +9,87 @@ import axios from 'axios'
 export async function run(): Promise<void> {
   try {
     // 获取访问 swarmpit 的地址，如果没有设置则报错
-    const uri: string = core.getInput('swarmpit_host')
-    if (!uri) {
-      core.setFailed('cannot find swarmpit_host')
+    const uri: string = core.getInput('swarmpit_uri').trim()
+    if (!validator.isURL(uri)) {
+      core.setFailed('swarmpit_host is not a valid url')
     }
-    core.debug(`uri: ${uri}`)
+    core.debug(`Swarmpit URI is: ${uri}`)
 
     // 获取访问 swarmpit 的 token，如果没有设置则报错
-    const token: string = core.getInput('swarmpit_token')
-    if (!token) {
-      core.setFailed('cannot find swarmpit_token')
+    const token: string = core.getInput('swarmpit_token').trim()
+    if (
+      !validator.matches(
+        token,
+        /^Bearer\s[\d|a-fA-F]{8}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{12}$/
+      )
+    ) {
+      core.setFailed('swarmpit_token is not a valid token')
     }
-    core.debug(`token: ----`)
-
-    // 获取 service_id 或 service_name，如果都没有设置则报错
-    let service_id: string = core.getInput('service_id')
-    const service_name: string = core.getInput('service_name')
+    core.debug(`token has seted`)
     const headers = {
       authorization: token,
-      'Accept': 'application/json',
+      Accept: 'application/json'
     }
-    if (!service_id && !service_name) {
-      core.setFailed('cannot find service_id or service_name')
-    }
-    // 如果没有设置 service_id，则通过 service_name 获取 service_id, 如果没有找到则报错
-    if (!service_id) {
-      const service_list_url = `${uri}/api/services`
-      const services = await axios.get(service_list_url, { headers, timeout: 5000 })
-      const service = services.data.find((item: any) => item.serviceName === service_name)
+
+    // 获取swarm集群部署的所有service list
+    const service_list_url = `${uri}/api/services`
+    const services = await axios.get(service_list_url, {
+      headers,
+      timeout: 5000
+    })
+
+    let compose_service_id: string = ''
+    // 获取service_id，如有则检查是否存在与service list
+    const service_id: string = core.getInput('service_id').trim()
+    if (service_id) {
+      const service = services.data.find((item: any) => item.id === service_id)
       if (!service) {
-        core.setFailed(`cannot find service ${service_name}`)
+        core.info(`cannot find service ${service_id}`)
       }
-      service_id = service.id
+      compose_service_id = service.id
     }
-    core.debug(`service_id: ${service_id}`)
+
+    // 如果没有找到id对应的service，则通过 service_name 查找
+    if (compose_service_id === '') {
+      // 获取service_name，如有则检查是否存在与service list
+      const service_name: string = core.getInput('service_name').trim()
+      if (service_name) {
+        const service = services.data.find(
+          (item: any) => item.serviceName === service_name
+        )
+        if (!service) {
+          core.info(`cannot find service ${service_name}`)
+        }
+        compose_service_id = service.id
+      }
+    }
+
+    // 如果仍然没有找到, 则失败报错
+    if (compose_service_id === '') {
+      core.setFailed('cannot find service')
+    }
 
     // 获取部署的tag
-    let params = {}
-    const tag: string = core.getInput('tag')
+    let params: any = {}
+    const tag: string = core.getInput('tag').trim()
     if (tag) {
       core.debug(`tag: ${tag}`)
-      params = { tag : tag }
+      params = { tag: tag }
     }
 
     // 通过 service_id 调用redeploy接口
-    const redeploy_url = `${uri}/api/services/${service_id}/redeploy`
-    const result = await axios.post(redeploy_url, { params: params ,headers: headers, timeout: 5000 })
+    const redeploy_url = `${uri}/api/services/${compose_service_id}/redeploy`
+    const result = await axios.post(redeploy_url, {
+      params: params,
+      headers: headers,
+      timeout: 5000
+    })
     if (result.status === 202) {
       core.info(`redeploy service ${service_id} success`)
     } else {
       core.setFailed(`redeploy service ${service_id} failed`)
     }
-    // 
+    //
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
