@@ -14437,7 +14437,7 @@ async function run() {
             Accept: 'application/json'
         };
         // 获取swarm集群部署的所有service list
-        const service_list_url = `${uri}/api/services`;
+        const service_list_url = `${uri}/api/services`.replace(/([^:]\/)\/+/g, '$1');
         core.debug(`service list url: ${service_list_url}`);
         const services = await axios_1.default.get(service_list_url, {
             headers: headers,
@@ -14477,10 +14477,9 @@ async function run() {
             params = { tag: tag };
         }
         // 通过 service_id 调用redeploy接口
-        const redeploy_url = `${uri}/api/services/${compose_service_id}/redeploy`;
+        const redeploy_url = `${uri}api/services/${compose_service_id}/redeploy`.replace(/([^:]\/)\/+/g, '$1');
         core.debug(`redeploy url: ${redeploy_url}`);
-        const result = await axios_1.default.post(redeploy_url, {
-            params: params,
+        const result = await axios_1.default.post(redeploy_url, params, {
             headers: headers,
             timeout: 5000
         });

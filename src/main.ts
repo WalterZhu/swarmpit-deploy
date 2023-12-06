@@ -76,7 +76,11 @@ export async function run(): Promise<void> {
     }
 
     // 通过 service_id 调用redeploy接口
-    const redeploy_url = `${uri}api/services/${compose_service_id}/redeploy`.replace(/([^:]\/)\/+/g, '$1')
+    const redeploy_url =
+      `${uri}api/services/${compose_service_id}/redeploy`.replace(
+        /([^:]\/)\/+/g,
+        '$1'
+      )
     core.debug(`redeploy url: ${redeploy_url}`)
     const result = await axios.post(redeploy_url, params, {
       headers: headers,
