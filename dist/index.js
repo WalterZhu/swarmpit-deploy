@@ -14440,7 +14440,7 @@ async function run() {
         const service_list_url = `${uri}/api/services`;
         core.debug(`service list url: ${service_list_url}`);
         const services = await axios_1.default.get(service_list_url, {
-            headers,
+            headers: headers,
             timeout: 5000
         });
         let compose_service_id = '';

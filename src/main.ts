@@ -32,7 +32,7 @@ export async function run(): Promise<void> {
     const service_list_url = `${uri}/api/services`
     core.debug(`service list url: ${service_list_url}`)
     const services = await axios.get(service_list_url, {
-      headers,
+      headers: headers,
       timeout: 5000
     })
 
