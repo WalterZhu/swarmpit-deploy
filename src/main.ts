@@ -25,7 +25,8 @@ export async function run(): Promise<void> {
     // 设置请求头
     const headers = {
       authorization: token,
-      Accept: 'application/json'
+      Accept: 'application/json',
+      'Content-Type': 'application/json'
     }
 
     // 获取swarm集群部署的所有service list
@@ -68,12 +69,13 @@ export async function run(): Promise<void> {
     }
 
     // 获取部署的tag
-    let params: any = {}
+    const params: any = { tag: 'latest' }
     const tag: string = core.getInput('tag').trim()
     if (tag) {
       core.debug(`tag: ${tag}`)
-      params = { tag: tag }
+      params.tag = tag
     }
+    core.debug(`params: ${JSON.stringify(params)}`)
 
     // 通过 service_id 调用redeploy接口
     const redeploy_url =
@@ -83,8 +85,8 @@ export async function run(): Promise<void> {
       )
     core.debug(`redeploy url: ${redeploy_url}`)
     const result = await axios.post(redeploy_url, null, {
-      params: params,
       headers: headers,
+      params: params,
       timeout: 5000
     })
     if (result.status === 202) {

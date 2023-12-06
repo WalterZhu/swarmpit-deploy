@@ -14434,7 +14434,8 @@ async function run() {
         // 设置请求头
         const headers = {
             authorization: token,
-            Accept: 'application/json'
+            Accept: 'application/json',
+            'Content-Type': 'application/json'
         };
         // 获取swarm集群部署的所有service list
         const service_list_url = `${uri}/api/services`.replace(/([^:]\/)\/+/g, '$1');
@@ -14470,18 +14471,19 @@ async function run() {
             core.setFailed('cannot find service');
         }
         // 获取部署的tag
-        let params = {};
+        const params = { tag: 'latest' };
         const tag = core.getInput('tag').trim();
         if (tag) {
             core.debug(`tag: ${tag}`);
-            params = { tag: tag };
+            params.tag = tag;
         }
+        core.debug(`params: ${JSON.stringify(params)}`);
         // 通过 service_id 调用redeploy接口
         const redeploy_url = `${uri}api/services/${compose_service_id}/redeploy`.replace(/([^:]\/)\/+/g, '$1');
         core.debug(`redeploy url: ${redeploy_url}`);
         const result = await axios_1.default.post(redeploy_url, null, {
-            params: params,
             headers: headers,
+            params: params,
             timeout: 5000
         });
         if (result.status === 202) {
