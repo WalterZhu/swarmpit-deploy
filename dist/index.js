@@ -14427,9 +14427,6 @@ async function run() {
         core.debug(`Swarmpit URI is: ${uri}`);
         // 获取访问 swarmpit 的 token，如果没有设置则报错
         const token = core.getInput('swarmpit_token').trim();
-        if (!validator_1.default.matches(token, /^Bearer\s[\d|a-fA-F]{8}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{12}$/)) {
-            core.setFailed('swarmpit_token is not a valid token');
-        }
         core.debug(`token has seted`);
         const headers = {
             authorization: token,
