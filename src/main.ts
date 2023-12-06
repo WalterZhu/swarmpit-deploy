@@ -82,8 +82,7 @@ export async function run(): Promise<void> {
         '$1'
       )
     core.debug(`redeploy url: ${redeploy_url}`)
-    const result = await axios.post(redeploy_url, {
-      params: params,
+    const result = await axios.post(redeploy_url, params, {
       headers: headers,
       timeout: 5000
     })

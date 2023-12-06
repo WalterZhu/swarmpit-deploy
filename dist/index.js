@@ -14479,8 +14479,7 @@ async function run() {
         // 通过 service_id 调用redeploy接口
         const redeploy_url = `${uri}api/services/${compose_service_id}/redeploy`.replace(/([^:]\/)\/+/g, '$1');
         core.debug(`redeploy url: ${redeploy_url}`);
-        const result = await axios_1.default.post(redeploy_url, {
-            params: params,
+        const result = await axios_1.default.post(redeploy_url, params, {
             headers: headers,
             timeout: 5000
         });
