@@ -82,7 +82,7 @@ export async function run(): Promise<void> {
         '$1'
       )
     core.debug(`redeploy url: ${redeploy_url}`)
-    const result = await axios.post(redeploy_url, null, {
+    const result = await axios.post(redeploy_url, {
       params: params,
       headers: headers,
       timeout: 5000
@@ -92,7 +92,6 @@ export async function run(): Promise<void> {
     } else {
       core.setFailed(`redeploy service ${service_id} failed`)
     }
-    //
   } catch (error) {
     // Fail the workflow run if an error occurs
     if (error instanceof Error) core.setFailed(error.message)
