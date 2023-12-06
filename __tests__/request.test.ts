@@ -1,8 +1,7 @@
 /**
- * Unit tests for src/wait.ts
+ * Unit tests for src/request.ts
  */
 
-import exp from 'constants'
 import { request } from '../src/request'
 import { expect } from '@jest/globals'
 
