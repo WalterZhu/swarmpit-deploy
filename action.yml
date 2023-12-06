@@ -27,11 +27,6 @@ inputs:
     required: false
     default: 'latest'
 
-# Define your outputs here.
-outputs:
-  time:
-    description: 'Stack's compose.yaml in string'
-
 runs:
   using: node20
   main: dist/index.js
