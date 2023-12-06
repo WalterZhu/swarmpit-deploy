@@ -75,18 +75,23 @@ export async function run(): Promise<void> {
       core.debug(`tag: ${tag}`)
       params.tag = tag
     }
-    core.debug(`params: ${JSON.stringify(params)}`)
+    let query = Object.keys(params)
+      .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
+      .join('&')
+    core.debug(`params: ${query}`)
 
     // 通过 service_id 调用redeploy接口
     const redeploy_url =
       `${uri}api/services/${compose_service_id}/redeploy`.replace(
         /([^:]\/)\/+/g,
         '$1'
-      )
+      ) +
+      '?' +
+      query
+
     core.debug(`redeploy url: ${redeploy_url}`)
     const result = await axios.post(redeploy_url, null, {
       headers: headers,
-      params: params,
       timeout: 5000
     })
     if (result.status === 202) {
