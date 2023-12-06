@@ -48,7 +48,7 @@ describe('action test', () => {
         case 'swarmpit_uri':
           return 'http://swarmpit.com:8888'
         case 'swarmpit_token':
-          return '123456'
+          return 'ifQ.C0wzNMJE6ZnaftTK8EEyPv4uT3p6VHBk1S-Ekn3mJaY'
         default:
           return ''
       }

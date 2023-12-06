@@ -17,7 +17,12 @@ export async function run(): Promise<void> {
 
     // 获取访问 swarmpit 的 token，如果没有设置则报错
     const token: string = core.getInput('swarmpit_token').trim()
+    if (!validator.matches(token, /^Bearer\s.*/)) {
+      core.setFailed('swarmpit_token is not a valid token')
+    }
     core.debug(`token has seted`)
+
+    // 设置请求头
     const headers = {
       authorization: token,
       Accept: 'application/json'
@@ -25,6 +30,7 @@ export async function run(): Promise<void> {
 
     // 获取swarm集群部署的所有service list
     const service_list_url = `${uri}/api/services`
+    core.debug(`service list url: ${service_list_url}`)
     const services = await axios.get(service_list_url, {
       headers,
       timeout: 5000
@@ -71,6 +77,7 @@ export async function run(): Promise<void> {
 
     // 通过 service_id 调用redeploy接口
     const redeploy_url = `${uri}/api/services/${compose_service_id}/redeploy`
+    core.debug(`redeploy url: ${redeploy_url}`)
     const result = await axios.post(redeploy_url, {
       params: params,
       headers: headers,
