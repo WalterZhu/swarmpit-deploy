@@ -20,7 +20,7 @@ export async function run(): Promise<void> {
     if (
       !validator.matches(
         token,
-        /^Bearer\s[\d|a-fA-F]{8}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{4}-[\d|a-fA-F]{12}$/
+        /^Bearer\s.*/
       )
     ) {
       core.setFailed('swarmpit_token is not a valid token')
