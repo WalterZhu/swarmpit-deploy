@@ -17,14 +17,6 @@ export async function run(): Promise<void> {
 
     // 获取访问 swarmpit 的 token，如果没有设置则报错
     const token: string = core.getInput('swarmpit_token').trim()
-    if (
-      !validator.matches(
-        token,
-        /^Bearer\s.*/
-      )
-    ) {
-      core.setFailed('swarmpit_token is not a valid token')
-    }
     core.debug(`token has seted`)
     const headers = {
       authorization: token,
