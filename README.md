@@ -13,7 +13,7 @@
 ### 对已部署的service进行更新
 
 - 以下是一个对已部署的service进行更新的例子
-- 可以从swarmpit控制台里查看已部署serivce的id和name，注意大小写
+- 可以从swarmpit控制台里查看已部署service的id和name，注意大小写
 - 至少提供service_id或者service_name其中之一
 - 如果同时提供了service_id和service_name，以service_id为准
 - 可以使用swarmpit控制台来维护service的部署描述（compose.yml）
