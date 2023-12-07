@@ -14430,7 +14430,7 @@ async function run() {
         if (!validator_1.default.matches(token, /^Bearer\s.*/)) {
             core.setFailed('swarmpit_token is not a valid token');
         }
-        core.debug(`token has seted`);
+        core.debug(`token has been set`);
         // 设置请求头
         const headers = {
             authorization: token,
@@ -14474,17 +14474,13 @@ async function run() {
         const params = { tag: 'latest' };
         const tag = core.getInput('tag').trim();
         if (tag) {
-            core.debug(`tag: ${tag}`);
             params.tag = tag;
         }
-        let query = Object.keys(params)
-            .map(k => encodeURIComponent(k) + '=' + encodeURIComponent(params[k]))
-            .join('&');
+        let query = 'tag' + '=' + encodeURIComponent(tag);
         core.debug(`params: ${query}`);
         // 通过 service_id 调用redeploy接口
-        const redeploy_url = `${uri}api/services/${compose_service_id}/redeploy`.replace(/([^:]\/)\/+/g, '$1') +
-            '?' +
-            query;
+        const temp_url = `${uri}/api/services/${compose_service_id}/redeploy`;
+        const redeploy_url = temp_url.replace(/([^:]\/)\/+/g, '$1') + '?' + query;
         core.debug(`redeploy url: ${redeploy_url}`);
         const result = await axios_1.default.post(redeploy_url, null, {
             headers: headers,
